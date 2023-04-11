@@ -3,23 +3,23 @@
 pipeline {
     agent {
         node {
-            label "ci"
+            label 'ci'
         }
     }
     stages {
         stage('first') {
             steps {
-                container("maven") {
+                container('maven') {
                     sh 'mvn -version'
-                    println "hello"
+                    println 'hello'
                 }
             }
         }
         stage('second') {
             steps {
-                container("node") {
-                    sh "node -v"
-                    getBranchName()
+                container('node') {
+                    sh 'node -v'
+                    hello()
                 }
             }
         }

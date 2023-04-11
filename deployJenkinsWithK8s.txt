@@ -1,0 +1,37 @@
+
+###################### Configure Jenkins ################################################
+after adding kubernetes plugin, head to manage clouds and nodes and add a kubernetes cloud.
+add the namespace the jenkins pod is running.
+in the credentials add the .kube/config file as credentials (you can find it on the master node)
+
+in jenkins url add: http://<jenkins-svc-name>.<namespace>.svc.cluster.local:<inluster-jenkins-svc-port>/
+in the jenkins tunnel add: <jnlp-svc-name>:50000.
+
+add label to the pod.
+
+####################### Adding pods to the cloud #########################################
+
+give it a name, label and namespace.
+usage, set to only build jobs with label matching node.
+
+In the container template set name to jnlp, and the docker image should be jenkins/jnlp-slave:latest-jdk11
+IMPORTANT!!
+if you dont have accec to docker hub you have to set your own jnlp image!!
+
+if you want to add more containers in the pod, for example adding helm pod, java/maven etc, you can add in the raw yaml for the pod the template for the pod.
+
+!!IMPORTANT!!
+most images require you to open an interactive terminal to be able to run commands inside. 
+to achive that, you need to add the following lines in the yaml file under every image you want to use:
+- cat
+tty: true
+and set yaml merge strategy to OVERRIDE
+
+####################### Declarative Pipeline #########################################
+ agent {
+        node {
+            label '<pod label>'
+        }
+    }
+in case you have multiple containers in the pod you have to specify in each stage what container to use, like this:
+container(name){
